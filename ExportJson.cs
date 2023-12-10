@@ -30,6 +30,7 @@ namespace ExportInvoicesJson
             var connection = new InvoiceRepository();
             var invoices = await connection.FindAsync("");
             List<InvoiceDto> invoicesDto = new();
+
             if (invoices != null)
             {
                 foreach (var invoice in invoices)
@@ -39,12 +40,16 @@ namespace ExportInvoicesJson
                     invoicesDto.Add(invoiceJson);
                 }
             }
+            InvoicesDto invoicesDtos = new()
+            {
+                invoices = invoicesDto
+            };
 
 
-            string json = JsonSerializer.Serialize(invoicesDto, options);
+            string json = JsonSerializer.Serialize(invoicesDtos, options);
 
             string? path = Path.GetDirectoryName(Application.ExecutablePath);
-            try { File.WriteAllText($"{_folder ?? path}/invoices.json", json, Encoding.GetEncoding(1251)); }
+            try { File.WriteAllText($"{_folder ?? path}/invoices.json", json, Encoding.UTF8); }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
